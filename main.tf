@@ -25,9 +25,13 @@ resource "docker_container" "servers" {
   networks = ["${var.docker_net_name}"]
   network_mode = "${var.docker_net_name}"
   # command = concat(list("agent", "-server", "-client=0.0.0.0", "-bootstrap-expect=${var.num_servers}"),formatlist("--retry-join=%s", concat(slice(data.template_file.server_names.*.rendered, 0, count.index), slice(data.template_file.server_names.*.rendered, count.index + 1, length(data.template_file.server_names.*.rendered)))))
-  command = concat(list("agent", "-server", "-client=0.0.0.0", "-ui", "-bootstrap-expect=${var.num_servers}"),formatlist("--retry-join=%s",data.template_file.server_names.*.rendered), list("-hcl=connect { enabled = true }"))
+  command = concat(list("agent", "-server", "-client=0.0.0.0", "-bootstrap-expect=${var.num_servers}"),formatlist("--retry-join=%s",data.template_file.server_names.*.rendered))
   env=["CONSUL_BIND_INTERFACE=eth0", "CONSUL_ALLOW_PRIVILEGED_PORTS=yes"]
   count = "${var.num_servers}"
+  volumes {
+    host_path = "${abspath(path.root)}/consul.d/server"
+    container_path = "/consul/config"
+  }
 }
 
 data "template_file" "client_names" {
@@ -50,4 +54,8 @@ resource "docker_container" "clients" {
   command = concat(list("agent", "-client=0.0.0.0"),formatlist("--retry-join=%s",data.template_file.server_names.*.rendered))
   env=["CONSUL_BIND_INTERFACE=eth0", "CONSUL_ALLOW_PRIVILEGED_PORTS=yes"]
   count = "${var.num_clients}"
+  volumes {
+    host_path = "${abspath(path.root)}/consul.d/client"
+    container_path = "/consul/config"
+  }
 }

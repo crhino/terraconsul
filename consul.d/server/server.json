@@ -1,0 +1,12 @@
+{
+  "datacenter": "chris1",
+  "log_level": "DEBUG",
+  "server": true,
+  "ui": true,
+  "ports": {
+    "grpc": 8502
+  },
+  "connect": {
+    "enabled": true
+  }
+}
