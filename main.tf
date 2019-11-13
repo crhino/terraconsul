@@ -54,8 +54,20 @@ resource "docker_container" "clients" {
   command = concat(list("agent", "-client=0.0.0.0"),formatlist("--retry-join=%s",data.template_file.server_names.*.rendered))
   env=["CONSUL_BIND_INTERFACE=eth0", "CONSUL_ALLOW_PRIVILEGED_PORTS=yes"]
   count = "${var.num_clients}"
+  # This is for the dashboard service
+  ports {
+    internal = 9002
+  }
   volumes {
     host_path = "${abspath(path.root)}/consul.d/client"
     container_path = "/consul/config"
+  }
+  volumes {
+    host_path = "${abspath(path.root)}/consul.d/counting"
+    container_path = "/consul/counting"
+  }
+  volumes {
+    host_path = "${abspath(path.root)}/consul.d/dashboard"
+    container_path = "/consul/dashboard"
   }
 }
