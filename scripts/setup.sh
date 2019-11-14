@@ -71,10 +71,17 @@ if [[ -n ${USE_ENVOY+x} ]]; then
 fi
 
 install_from_url "consul-client1" "dashboard-service" "${dashboard_service_url}"
-install_from_url "consul-client2" "counting-service" "${counting_service_url}"
-
 register_service "consul-client1" "/consul/dashboard/dashboard.json"
-register_service "consul-client2" "/consul/counting/counting.json"
-
 run_dashboard "consul-client1" ${connect_cmd}
+
+install_from_url "consul-client2" "dashboard-service" "${dashboard_service_url}"
+register_service "consul-client2" "/consul/dashboard/dashboard.json"
+run_dashboard "consul-client2" ${connect_cmd}
+
+install_from_url "consul-client1" "counting-service" "${counting_service_url}"
+register_service "consul-client1" "/consul/counting/counting.json"
+run_counting "consul-client1" ${connect_cmd}
+
+install_from_url "consul-client2" "counting-service" "${counting_service_url}"
+register_service "consul-client2" "/consul/counting/counting.json"
 run_counting "consul-client2" ${connect_cmd}

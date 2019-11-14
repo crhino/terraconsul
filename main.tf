@@ -58,16 +58,17 @@ resource "docker_container" "clients" {
   ports {
     internal = 9002
   }
+
+  upload {
+    content = templatefile("${path.module}/consul.d/counting/counting.json.tmpl", { index = "${count.index}" })
+    file = "/consul/counting/counting.json"
+  }
+  upload {
+    content = templatefile("${path.module}/consul.d/dashboard/dashboard.json.tmpl", { index = "${count.index}" })
+    file = "/consul/dashboard/dashboard.json"
+  }
   volumes {
     host_path = "${abspath(path.root)}/consul.d/client"
     container_path = "/consul/config"
-  }
-  volumes {
-    host_path = "${abspath(path.root)}/consul.d/counting"
-    container_path = "/consul/counting"
-  }
-  volumes {
-    host_path = "${abspath(path.root)}/consul.d/dashboard"
-    container_path = "/consul/dashboard"
   }
 }
