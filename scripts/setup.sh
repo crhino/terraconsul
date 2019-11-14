@@ -39,7 +39,7 @@ function run_dashboard {
 
   docker exec -d ${1} sh \
     -c \
-    "consul connect ${2} -sidecar-for dashboard > /consul/dashboard-proxy.log 2>&1"
+    "consul connect ${2} -sidecar-for ${3} > /consul/dashboard-proxy.log 2>&1"
 }
 
 function run_counting {
@@ -49,7 +49,7 @@ function run_counting {
 
   docker exec -d ${1} sh \
     -c \
-    "consul connect ${2} -sidecar-for counting > /consul/counting-proxy.log 2>&1"
+    "consul connect ${2} -sidecar-for ${3} > /consul/counting-proxy.log 2>&1"
 }
 
 dashboard_service_url="https://github.com/hashicorp/demo-consul-101/releases/download/0.0.1/dashboard-service_linux_amd64.zip"
@@ -67,21 +67,21 @@ terraform plan -out cluster.plan -var "image=${image}"
 terraform apply cluster.plan
 
 if [[ -n ${USE_ENVOY+x} ]]; then
-  install_envoy_binary "consul-client1" "consul-client2"
+  install_envoy_binary "consul-client0" "consul-client1"
 fi
+
+install_from_url "consul-client0" "dashboard-service" "${dashboard_service_url}"
+register_service "consul-client0" "/consul/dashboard/dashboard.json"
+run_dashboard "consul-client0" ${connect_cmd} "dashboard0"
 
 install_from_url "consul-client1" "dashboard-service" "${dashboard_service_url}"
 register_service "consul-client1" "/consul/dashboard/dashboard.json"
-run_dashboard "consul-client1" ${connect_cmd}
+run_dashboard "consul-client1" ${connect_cmd} "dashboard1"
 
-install_from_url "consul-client2" "dashboard-service" "${dashboard_service_url}"
-register_service "consul-client2" "/consul/dashboard/dashboard.json"
-run_dashboard "consul-client2" ${connect_cmd}
+install_from_url "consul-client0" "counting-service" "${counting_service_url}"
+register_service "consul-client0" "/consul/counting/counting.json"
+run_counting "consul-client0" ${connect_cmd} "counting0"
 
 install_from_url "consul-client1" "counting-service" "${counting_service_url}"
 register_service "consul-client1" "/consul/counting/counting.json"
-run_counting "consul-client1" ${connect_cmd}
-
-install_from_url "consul-client2" "counting-service" "${counting_service_url}"
-register_service "consul-client2" "/consul/counting/counting.json"
-run_counting "consul-client2" ${connect_cmd}
+run_counting "consul-client1" ${connect_cmd} "counting1"

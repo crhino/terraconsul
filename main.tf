@@ -38,7 +38,7 @@ data "template_file" "client_names" {
   count = "${var.num_clients}"
   template = "${var.container_basename}-client$${client_num}"
   vars = {
-    client_num = "${count.index + 1}"
+    client_num = "${count.index}"
   }
 }
 
