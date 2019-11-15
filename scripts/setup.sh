@@ -56,10 +56,12 @@ dashboard_service_url="https://github.com/hashicorp/demo-consul-101/releases/dow
 counting_service_url="https://github.com/hashicorp/demo-consul-101/releases/download/0.0.1/counting-service_linux_amd64.zip"
 
 connect_cmd="proxy"
+counting_flag=""
 image="consul-dev"
 if [[ -n ${USE_ENVOY+x} ]]; then
   echo "Using 'envoy' as Connect proxy..."
   connect_cmd="envoy"
+  counting_flag="-admin-bind=127.0.0.1:19001"
   image="glibc-consul"
 fi
 
@@ -80,8 +82,8 @@ run_dashboard "consul-client1" ${connect_cmd} "dashboard1"
 
 install_from_url "consul-client0" "counting-service" "${counting_service_url}"
 register_service "consul-client0" "/consul/counting/counting.json"
-run_counting "consul-client0" ${connect_cmd} "counting0"
+run_counting "consul-client0" "${connect_cmd} ${counting_flag}" "counting0"
 
 install_from_url "consul-client1" "counting-service" "${counting_service_url}"
 register_service "consul-client1" "/consul/counting/counting.json"
-run_counting "consul-client1" ${connect_cmd} "counting1"
+run_counting "consul-client1" "${connect_cmd} ${counting_flag}" "counting1"
