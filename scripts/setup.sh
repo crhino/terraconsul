@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 function install_from_url {
   curl -sfLo /tmp/${2}.zip "${3}"
   docker cp /tmp/${2}.zip ${1}:/tmp
@@ -59,10 +61,13 @@ connect_cmd="proxy"
 counting_flag=""
 image="consul-dev"
 if [[ -n ${USE_ENVOY+x} ]]; then
+  echo "Building 'consul-envoy' docker images..."
+  ${DIR}/rebuild-consul-envoy.sh
+
   echo "Using 'envoy' as Connect proxy..."
   connect_cmd="envoy"
   counting_flag="-admin-bind=127.0.0.1:19001"
-  image="glibc-consul"
+  image="consul-envoy"
 fi
 
 terraform plan -out cluster.plan -var "image=${image}"
