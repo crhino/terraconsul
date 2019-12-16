@@ -9,5 +9,8 @@
   },
   "connect": {
     "enabled": true
-  }
+  },
+  "log_file": "/consul/",
+  "log_rotate_bytes": 1048576,
+  "log_rotate_max_files": 10
 }
