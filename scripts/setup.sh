@@ -59,7 +59,7 @@ counting_service_url="https://github.com/hashicorp/demo-consul-101/releases/down
 
 connect_cmd="proxy"
 counting_flag=""
-image="consul-dev"
+image="${IMAGE:-consul-dev}"
 if [[ -n ${USE_ENVOY+x} ]]; then
   echo "Building 'consul-envoy' docker images..."
   ${DIR}/rebuild-consul-envoy.sh
