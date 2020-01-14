@@ -92,3 +92,6 @@ run_counting "consul-client0" "${connect_cmd} ${counting_flag}" "counting0"
 install_from_url "consul-client1" "counting-service" "${counting_service_url}"
 register_service "consul-client1" "/consul/counting/counting.json"
 run_counting "consul-client1" "${connect_cmd} ${counting_flag}" "counting1"
+
+echo
+echo "export CONSUL_HTTP_ADDR=http://localhost:30000"

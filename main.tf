@@ -17,7 +17,6 @@ resource "docker_network" "consul-net" {
 
 resource "docker_container" "servers" {
   privileged = true
-  publish_all_ports = true
   image = "${var.image}"
   name = "${data.template_file.server_names.*.rendered[count.index]}"
   hostname = "${data.template_file.server_names.*.rendered[count.index]}"
@@ -28,6 +27,10 @@ resource "docker_container" "servers" {
   command = concat(list("agent", "-server", "-client=0.0.0.0", "-bootstrap-expect=${var.num_servers}"),formatlist("--retry-join=%s",data.template_file.server_names.*.rendered))
   env=["CONSUL_BIND_INTERFACE=eth0", "CONSUL_ALLOW_PRIVILEGED_PORTS=yes"]
   count = "${var.num_servers}"
+  ports {
+    internal = 8500
+    external = 30000 + count.index
+  }
   volumes {
     host_path = "${abspath(path.root)}/consul.d/server"
     container_path = "/consul/config"
@@ -44,7 +47,6 @@ data "template_file" "client_names" {
 
 resource "docker_container" "clients" {
   privileged = true
-  publish_all_ports = true
   image = "${var.image}"
   name = "${data.template_file.client_names.*.rendered[count.index]}"
   hostname = "${data.template_file.client_names.*.rendered[count.index]}"
@@ -54,6 +56,11 @@ resource "docker_container" "clients" {
   command = concat(list("agent", "-client=0.0.0.0"),formatlist("--retry-join=%s",data.template_file.server_names.*.rendered))
   env=["CONSUL_BIND_INTERFACE=eth0", "CONSUL_ALLOW_PRIVILEGED_PORTS=yes"]
   count = "${var.num_clients}"
+  ports {
+    internal = 8500
+    external = 31000 + count.index
+  }
+
   # This is for the dashboard service
   ports {
     internal = 9002

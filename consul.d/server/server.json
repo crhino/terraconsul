@@ -2,6 +2,7 @@
   "datacenter": "chris1",
   "encrypt": "qe3xJo9rtJSU/m8xgp7bB7PL357kNA85G1EBCV8jbE0=",
   "log_level": "DEBUG",
+  "log_json": true,
   "server": true,
   "ui": true,
   "ports": {
