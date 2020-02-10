@@ -74,24 +74,24 @@ terraform plan -out cluster.plan -var "image=${image}"
 terraform apply cluster.plan
 
 if [[ -n ${USE_ENVOY+x} ]]; then
-  install_envoy_binary "consul-client0" "consul-client1"
+  install_envoy_binary "consul-dc1-client0" "consul-dc1-client1"
 fi
 
-install_from_url "consul-client0" "dashboard-service" "${dashboard_service_url}"
-register_service "consul-client0" "/consul/dashboard/dashboard.json"
-run_dashboard "consul-client0" ${connect_cmd} "dashboard0"
+install_from_url "consul-dc1-client0" "dashboard-service" "${dashboard_service_url}"
+register_service "consul-dc1-client0" "/consul/dashboard/dashboard.json"
+run_dashboard "consul-dc1-client0" ${connect_cmd} "dashboard0"
 
-install_from_url "consul-client1" "dashboard-service" "${dashboard_service_url}"
-register_service "consul-client1" "/consul/dashboard/dashboard.json"
-run_dashboard "consul-client1" ${connect_cmd} "dashboard1"
+install_from_url "consul-dc1-client1" "dashboard-service" "${dashboard_service_url}"
+register_service "consul-dc1-client1" "/consul/dashboard/dashboard.json"
+run_dashboard "consul-dc1-client1" ${connect_cmd} "dashboard1"
 
-install_from_url "consul-client0" "counting-service" "${counting_service_url}"
-register_service "consul-client0" "/consul/counting/counting.json"
-run_counting "consul-client0" "${connect_cmd} ${counting_flag}" "counting0"
+install_from_url "consul-dc1-client0" "counting-service" "${counting_service_url}"
+register_service "consul-dc1-client0" "/consul/counting/counting.json"
+run_counting "consul-dc1-client0" "${connect_cmd} ${counting_flag}" "counting0"
 
-install_from_url "consul-client1" "counting-service" "${counting_service_url}"
-register_service "consul-client1" "/consul/counting/counting.json"
-run_counting "consul-client1" "${connect_cmd} ${counting_flag}" "counting1"
+install_from_url "consul-dc1-client1" "counting-service" "${counting_service_url}"
+register_service "consul-dc1-client1" "/consul/counting/counting.json"
+run_counting "consul-dc1-client1" "${connect_cmd} ${counting_flag}" "counting1"
 
 echo
 echo "export CONSUL_HTTP_ADDR=http://localhost:30000"
