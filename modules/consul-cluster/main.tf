@@ -52,7 +52,7 @@ resource "docker_container" "clients" {
   labels = {}
   networks = ["${var.docker_net_name}"]
   network_mode = "${var.docker_net_name}"
-  command = concat(list("agent", "-client=0.0.0.0"),formatlist("--retry-join=%s", concat(slice(data.template_file.server_names.*.rendered, 0, count.index), slice(data.template_file.server_names.*.rendered, count.index + 1, length(data.template_file.server_names.*.rendered)))))
+  command = concat(list("agent", "-client=0.0.0.0"),formatlist("--retry-join=%s",data.template_file.server_names.*.rendered))
   env=["CONSUL_BIND_INTERFACE=eth0", "CONSUL_ALLOW_PRIVILEGED_PORTS=yes"]
   count = "${var.num_clients}"
   ports {
