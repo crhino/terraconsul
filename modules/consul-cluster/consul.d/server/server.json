@@ -19,6 +19,29 @@
   "connect": {
     "enabled": true
   },
+  "config_entries": {
+    "bootstrap": [
+      {
+        "kind": "proxy-defaults",
+        "name": "global",
+        "config": {
+          "protocol": "http"
+        }
+      },
+      {
+        "kind": "service-router",
+        "name": "counting",
+        "routes": [
+          {
+            "destination": {
+              "NumRetries": 3,
+              "RetryOnConnectFailure": true
+            }
+          }
+        ]
+      }
+    ]
+  },
   "log_file": "/consul/",
   "log_rotate_bytes": 1048576,
   "log_rotate_max_files": 10
