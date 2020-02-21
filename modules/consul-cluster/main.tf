@@ -9,30 +9,31 @@ data "template_file" "server_names" {
   }
 }
 
-resource "docker_network" "consul-net" {
-  name = "${var.docker_net_name}"
-  check_duplicate = "true"
-  driver = "bridge"
-}
-
 resource "docker_container" "servers" {
+  count = "${var.num_servers}"
   privileged = true
   image = "${var.image}"
   name = "${data.template_file.server_names.*.rendered[count.index]}"
   hostname = "${data.template_file.server_names.*.rendered[count.index]}"
   labels = {}
-  networks = ["${var.docker_net_name}"]
-  network_mode = "${var.docker_net_name}"
+  networks_advanced {
+    name = "${var.docker_net_name}"
+    aliases = ["${data.template_file.server_names[count.index].rendered}"]
+  }
   command = concat(list("agent", "-server", "-client=0.0.0.0", "-bootstrap-expect=${var.num_servers}"),formatlist("--retry-join=%s", concat(slice(data.template_file.server_names.*.rendered, 0, count.index), slice(data.template_file.server_names.*.rendered, count.index + 1, length(data.template_file.server_names.*.rendered)))))
   env=["CONSUL_BIND_INTERFACE=eth0", "CONSUL_ALLOW_PRIVILEGED_PORTS=yes"]
-  count = "${var.num_servers}"
   ports {
     internal = 8500
-    external = 30000 + count.index
+    external = var.external_ports_start + count.index
   }
-  volumes {
-    host_path = "${abspath(path.module)}/consul.d/server"
-    container_path = "/consul/config"
+  upload {
+    content = templatefile("${path.module}/consul.d/server.json.tmpl",
+      {
+        datacenter = var.datacenter,
+        primary_datacenter = var.primary_datacenter,
+        wan_retry_address = var.wan_retry_address,
+      })
+    file = "/consul/config/server.json"
   }
 }
 
@@ -45,19 +46,20 @@ data "template_file" "client_names" {
 }
 
 resource "docker_container" "clients" {
+  count = "${var.num_clients}"
   privileged = true
   image = "${var.image}"
   name = "${data.template_file.client_names.*.rendered[count.index]}"
   hostname = "${data.template_file.client_names.*.rendered[count.index]}"
   labels = {}
-  networks = ["${var.docker_net_name}"]
-  network_mode = "${var.docker_net_name}"
+  networks_advanced {
+    name = "${var.docker_net_name}"
+  }
   command = concat(list("agent", "-client=0.0.0.0"),formatlist("--retry-join=%s",data.template_file.server_names.*.rendered))
   env=["CONSUL_BIND_INTERFACE=eth0", "CONSUL_ALLOW_PRIVILEGED_PORTS=yes"]
-  count = "${var.num_clients}"
   ports {
     internal = 8500
-    external = 31000 + count.index
+    external = var.external_ports_start + 100 + count.index
   }
 
   # This is for the dashboard service
@@ -73,8 +75,16 @@ resource "docker_container" "clients" {
     content = templatefile("${path.module}/consul.d/dashboard/dashboard.json.tmpl", { index = "${count.index}" })
     file = "/consul/dashboard/dashboard.json"
   }
-  volumes {
-    host_path = "${abspath(path.module)}/consul.d/client"
-    container_path = "/consul/config"
+  # volumes {
+  #   host_path = "${abspath(path.module)}/consul.d/client"
+  #   container_path = "/consul/config"
+  # }
+  upload {
+    content = templatefile("${path.module}/consul.d/client.json.tmpl",
+      {
+        datacenter = var.datacenter,
+        primary_datacenter = var.primary_datacenter,
+      })
+    file = "/consul/config/client.json"
   }
 }

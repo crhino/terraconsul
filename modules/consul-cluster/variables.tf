@@ -17,3 +17,19 @@ variable "container_basename" {
 variable "docker_net_name" {
   default = "consul-net"
 }
+
+variable "external_ports_start" {
+  default = 30000
+}
+
+variable "datacenter" {
+  default = "chris1"
+}
+
+variable "primary_datacenter" {
+  default = "chris1"
+}
+
+variable "wan_retry_address" {
+  default = ""
+}
