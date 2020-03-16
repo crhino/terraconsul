@@ -32,6 +32,7 @@ resource "docker_container" "servers" {
         datacenter = var.datacenter,
         primary_datacenter = var.primary_datacenter,
         wan_retry_address = var.wan_retry_address,
+        master_token = var.master_token,
       })
     file = "/consul/config/server.json"
   }
@@ -75,10 +76,6 @@ resource "docker_container" "clients" {
     content = templatefile("${path.module}/consul.d/dashboard/dashboard.json.tmpl", { index = "${count.index}" })
     file = "/consul/dashboard/dashboard.json"
   }
-  # volumes {
-  #   host_path = "${abspath(path.module)}/consul.d/client"
-  #   container_path = "/consul/config"
-  # }
   upload {
     content = templatefile("${path.module}/consul.d/client.json.tmpl",
       {

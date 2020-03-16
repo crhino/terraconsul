@@ -33,3 +33,7 @@ variable "primary_datacenter" {
 variable "wan_retry_address" {
   default = ""
 }
+
+variable "master_token" {
+  default = "mastertoken"
+}

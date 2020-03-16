@@ -95,3 +95,4 @@ run_counting "consul-dc1-client1" "${connect_cmd} ${counting_flag}" "counting1"
 
 echo
 echo "export CONSUL_HTTP_ADDR=http://localhost:30000"
+echo "export CONSUL_HTTP_TOKEN=mastertoken"
