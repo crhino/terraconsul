@@ -1,5 +1,5 @@
 variable "image" {
-  default = "consul"
+  default = "envoy-consul"
 }
 
 variable "container_basename" {
@@ -10,6 +10,6 @@ variable "docker_net_name" {
   default = "consul-net"
 }
 
-variable "server_addresses" {
-  
+variable "agent_address" {
+  default = ""
 }

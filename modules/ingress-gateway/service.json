@@ -1,0 +1,7 @@
+{
+  "Service": {
+    "Name": "ingress1",
+    "Kind": "ingress-gateway",
+    "Address": ""
+  }
+}

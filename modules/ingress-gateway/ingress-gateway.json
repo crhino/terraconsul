@@ -1,0 +1,14 @@
+{
+  "kind": "ingress-gateway",
+  "name": "ingress1",
+  "listeners": [
+    {
+      "port": 443,
+      "services": [
+        {
+          "name": "dashboard"
+        }
+      ]
+    }
+  ]
+}
