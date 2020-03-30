@@ -4,13 +4,13 @@ set -euo pipefail
 
 if [ -z "$1" ]
   then
-    echo "No argument supplied, require agent address"
+    echo "No argument supplied, requires agent address"
     exit 1
 fi
 agent_address=$1
 if [ -z "$2" ]
   then
-    echo "No second argument supplied, require ingress service name"
+    echo "No second argument supplied, requires ingress service name"
     exit 1
 fi
 service_name=$2
@@ -27,7 +27,7 @@ export CONSUL_HTTP_ADDR="http://${agent_address}:8500"
 export CONSUL_HTTP_TOKEN=$token
 
 apt update -y
-apt-get install curl iproute2 -y
+apt-get install curl iproute2 dnsutils -y
 
 cat >${work_dir}/service.json <<EOF
   {
