@@ -29,22 +29,11 @@ export CONSUL_HTTP_TOKEN=$token
 apt update -y
 apt-get install curl iproute2 dnsutils -y
 
-cat >${work_dir}/service.json <<EOF
-  {
-    "Service": {
-      "Name": "ingress1",
-      "Kind": "ingress-gateway",
-      "Address": "$(hostname -i)"
-    }
-  }
-EOF
-
-consul services register ${work_dir}/service.json
-
 consul config write ${work_dir}/ingress-gateway.json
 
-consul connect envoy -bootstrap \
-  -grpc-addr "${agent_address}:8502" \
-  -proxy-id ${service_name} > ${work_dir}/envoy.json
-
-envoy -c ${work_dir}/envoy.json -l debug
+consul connect envoy \
+  -gateway=ingress \
+  -address="$(hostname -i):7777" \
+  -service="ingress1" \
+  -register \
+  -grpc-addr "${agent_address}:8502"

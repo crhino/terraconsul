@@ -3,6 +3,7 @@
   "name": "ingress1",
   "listeners": [
     {
+      "protocol": "http",
       "port": 443,
       "services": [
         {
