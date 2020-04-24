@@ -7,7 +7,7 @@
       "port": 443,
       "services": [
         {
-          "name": "dashboard"
+          "name": "*"
         }
       ]
     }

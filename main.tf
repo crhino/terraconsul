@@ -42,3 +42,12 @@ module "ingress" {
 
   agent_address = module.consul_cluster_dc1.server_addresses[0]
 }
+
+module "fortio" {
+  source = "./modules/fortio"
+
+  datacenter = "chris1"
+  docker_net_name = "${var.docker_net_name}"
+  agent_address = module.consul_cluster_dc1.server_addresses[0]
+  host_agent_address = "localhost:30000"
+}

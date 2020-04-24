@@ -13,4 +13,4 @@ pushd ${CONSUL_WORK_DIR}
 popd
 
 docker build docker -f docker/Consul-Envoy.dockerfile -t consul-envoy
-docker build docker -f docker/Envoy-Consul.dockerfile -t envoy-consul --build-arg="ENVOY_VERSION=1.13.1"
+docker build docker -f docker/Envoy-Consul.dockerfile -t envoy-consul --build-arg="ENVOY_VERSION=1.14.1"

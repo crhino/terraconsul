@@ -17,7 +17,7 @@ function install_from_url {
 }
 
 function install_envoy_binary {
-  local image="envoyproxy/envoy-alpine:v1.11.2"
+  local image="envoyproxy/envoy-alpine:v1.14.1"
 
   docker pull ${image}
   id=$(docker create ${image})
@@ -54,28 +54,25 @@ function run_counting {
     "consul connect ${2} -sidecar-for ${3} > /consul/counting-proxy.log 2>&1"
 }
 
-dashboard_service_url="https://github.com/hashicorp/demo-consul-101/releases/download/0.0.1/dashboard-service_linux_amd64.zip"
-counting_service_url="https://github.com/hashicorp/demo-consul-101/releases/download/0.0.1/counting-service_linux_amd64.zip"
+dashboard_service_url="https://github.com/hashicorp/demo-consul-101/releases/download/0.0.2/dashboard-service_linux_amd64.zip"
+counting_service_url="https://github.com/hashicorp/demo-consul-101/releases/download/0.0.2/counting-service_linux_amd64.zip"
 
 connect_cmd="proxy"
 counting_flag=""
 image="${IMAGE:-consul-dev}"
-if [[ -n ${USE_ENVOY+x} ]]; then
-  echo "Building 'consul-envoy' docker images..."
-  ${DIR}/rebuild-consul-envoy.sh
 
-  echo "Using 'envoy' as Connect proxy..."
-  connect_cmd="envoy"
-  counting_flag="-admin-bind=127.0.0.1:19001"
-  image="consul-envoy"
-fi
+echo "Building 'consul-envoy' docker images..."
+${DIR}/rebuild-consul-envoy.sh
+
+echo "Using 'envoy' as Connect proxy..."
+connect_cmd="envoy"
+counting_flag="-admin-bind=127.0.0.1:19001"
+image="consul-envoy"
 
 terraform plan -out cluster.plan -var "image=${image}"
 terraform apply cluster.plan
 
-if [[ -n ${USE_ENVOY+x} ]]; then
-  install_envoy_binary "consul-dc1-client0" "consul-dc1-client1"
-fi
+install_envoy_binary "consul-dc1-client0" "consul-dc1-client1"
 
 install_from_url "consul-dc1-client0" "dashboard-service" "${dashboard_service_url}"
 register_service "consul-dc1-client0" "/consul/dashboard/dashboard.json"
