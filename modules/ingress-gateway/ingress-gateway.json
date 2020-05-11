@@ -10,6 +10,15 @@
           "name": "*"
         }
       ]
+    },
+    {
+      "protocol": "http",
+      "port": 444,
+      "services": [
+        {
+          "name": "virtual"
+        }
+      ]
     }
   ]
 }

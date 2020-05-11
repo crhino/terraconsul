@@ -5,7 +5,7 @@ set -euo pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 function install_from_url {
-  curl -m 30 -sfLo /tmp/${2}.zip "${3}"
+  curl -m 60 -sfLo /tmp/${2}.zip "${3}"
   docker cp /tmp/${2}.zip ${1}:/tmp
 
   docker exec ${1} "sh" -c "cd /tmp && {

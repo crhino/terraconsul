@@ -31,9 +31,27 @@ apt-get install curl iproute2 dnsutils -y
 
 consul config write ${work_dir}/ingress-gateway.json
 
+cat >${work_dir}/service.json <<EOF
+  {
+    "Service": {
+      "Name": "${service_name}",
+      "ID": "${service_name}-$(hostname -i)",
+      "Kind": "ingress-gateway",
+      "Address": "$(hostname -i)",
+      "check": {
+        "name": "${service_name}-$(hostname -i)",
+        "tcp": "$(hostname -i):7777",
+        "interval": "1m",
+        "timeout": "1m"
+      }
+    }
+  }
+EOF
+consul services register ${work_dir}/service.json
+
 consul connect envoy \
   -gateway=ingress \
   -address="$(hostname -i):7777" \
-  -service="ingress1" \
-  -register \
+  -service=${service_name} \
+  -proxy-id="ingress1-$(hostname -i)" \
   -grpc-addr "${agent_address}:8502"
