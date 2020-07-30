@@ -1,0 +1,51 @@
+datacenter = "${datacenter}"
+primary_datacenter = "${primary_datacenter}"
+retry_join_wan = ["${wan_retry_address}"]
+encrypt = "qe3xJo9rtJSU/m8xgp7bB7PL357kNA85G1EBCV8jbE0="
+log_level = "TRACE"
+server = true
+ui = true
+acl {
+  enabled = true
+  default_policy = "allow"
+  enable_token_replication = true
+  enable_token_persistence = true
+  tokens {
+      master = "${agent_token}"
+  }
+}
+
+ports {
+  grpc = 8502
+  https = 8501
+  dns = 53
+}
+
+connect = {
+  enabled = true
+}
+
+ca_file = /consul/config/consul-ca.pem
+cert_file = /consul/config/consul-cert.pem
+key_file = /consul/config/consul-key.pem
+verify_outgoing = true
+verify_incoming = true
+verify_server_hostname = true
+
+auto_config {
+   authorization {
+      enabled = true
+      static {
+         jwt_validation_pub_keys = [
+            ""
+         ]
+         bound_issuer = "auto-config-cluster"
+         claim_mappings {
+            sub = "node"
+         }
+         claim_assertions = [
+            "value.node == \"*\""
+         ]
+      }
+   }
+}
