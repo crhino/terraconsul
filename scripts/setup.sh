@@ -17,7 +17,7 @@ function install_from_url {
 }
 
 function install_envoy_binary {
-  local image="envoyproxy/envoy-alpine:v1.14.1"
+  local image="envoyproxy/envoy-alpine:v1.14.2"
 
   docker pull ${image}
   id=$(docker create ${image})
@@ -71,6 +71,9 @@ image="consul-envoy"
 
 terraform plan -out cluster.plan -var "image=${image}"
 terraform apply cluster.plan
+
+# Wait for things to converge...
+sleep 60
 
 install_envoy_binary "consul-dc1-client0" "consul-dc1-client1"
 
