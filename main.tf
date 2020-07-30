@@ -34,12 +34,12 @@ module "consul_cluster_dc1" {
 #   wan_retry_address = module.consul_cluster_dc1.server_addresses[0]
 # }
 
-module "ingress" {
-  source = "./modules/ingress-gateway"
+# module "ingress" {
+#   source = "./modules/ingress-gateway"
 
-  image = "envoy-consul"
-  container_basename = "${var.container_basename}"
-  docker_net_name = "${var.docker_net_name}"
+#   image = "envoy-consul"
+#   container_basename = "${var.container_basename}"
+#   docker_net_name = "${var.docker_net_name}"
 
-  agent_address = module.consul_cluster_dc1.server_addresses[0]
-}
+#   agent_address = module.consul_cluster_dc1.server_addresses[0]
+# }
