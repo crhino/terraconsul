@@ -37,3 +37,11 @@ variable "wan_retry_address" {
 variable "master_token" {
   default = "mastertoken"
 }
+
+variable "jwt_validation_pub_key" {
+  default = ""
+}
+
+variable "intro_token" {
+  default = ""
+}

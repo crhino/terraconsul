@@ -8,16 +8,17 @@ ports {
   dns = 53
 }
 
-connect = {
+connect {
   enabled = true
 }
 
-ca_file = /consul/config/consul-ca.pem
+ca_file = "/consul/config/consul-ca.pem"
 verify_outgoing = true
 verify_incoming = true
 verify_server_hostname = true
 
 auto_config {
   enabled = true
-  server_addresses = [${server_address}]
+  server_addresses = ["${server_address}"]
+  intro_token = "${intro_token}"
 }

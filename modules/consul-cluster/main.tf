@@ -21,7 +21,8 @@ resource "docker_container" "servers" {
     aliases = ["${data.template_file.server_names[count.index].rendered}"]
   }
   command = concat(list("agent", "-server", "-client=0.0.0.0", "-bootstrap-expect=${var.num_servers}"),formatlist("--retry-join=%s", concat(slice(data.template_file.server_names.*.rendered, 0, count.index), slice(data.template_file.server_names.*.rendered, count.index + 1, length(data.template_file.server_names.*.rendered)))))
-  env=["CONSUL_BIND_INTERFACE=eth0", "CONSUL_ALLOW_PRIVILEGED_PORTS=yes"] ports {
+  env=["CONSUL_BIND_INTERFACE=eth0", "CONSUL_ALLOW_PRIVILEGED_PORTS=yes"]
+  ports {
     internal = 8500
     external = var.external_ports_start + count.index
   }
@@ -45,7 +46,8 @@ resource "docker_container" "servers" {
         datacenter = var.datacenter,
         primary_datacenter = var.primary_datacenter,
         wan_retry_address = var.wan_retry_address,
-        master_token = var.master_token,
+        agent_token = var.master_token,
+        jwt_validation_pub_key = var.jwt_validation_pub_key,
       })
     file = "/consul/config/server.hcl"
   }
@@ -125,6 +127,7 @@ resource "docker_container" "clients" {
         primary_datacenter = var.primary_datacenter,
         agent_token = var.master_token,
         server_address = "${data.template_file.server_names[0].rendered}"
+        intro_token = "${var.intro_token}"
       })
     file = "/consul/config/client.hcl"
   }

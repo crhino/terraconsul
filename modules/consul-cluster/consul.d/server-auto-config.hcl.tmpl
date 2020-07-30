@@ -21,13 +21,13 @@ ports {
   dns = 53
 }
 
-connect = {
+connect {
   enabled = true
 }
 
-ca_file = /consul/config/consul-ca.pem
-cert_file = /consul/config/consul-cert.pem
-key_file = /consul/config/consul-key.pem
+ca_file = "/consul/config/consul-ca.pem"
+cert_file = "/consul/config/consul-cert.pem"
+key_file = "/consul/config/consul-key.pem"
 verify_outgoing = true
 verify_incoming = true
 verify_server_hostname = true
@@ -36,9 +36,9 @@ auto_config {
    authorization {
       enabled = true
       static {
-         jwt_validation_pub_keys = [
-            ""
-         ]
+         // For some reason using terraform interpolation caused failures
+         jwt_validation_pub_keys = ["-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEEJgaffWSw03In6Ggt5Xe7TNnbRxx\naCTxYASpSAIuePHLFm9caPJXa6EgqLhs1tAIEzXr79ZxRe27pi5fOcsUZQ==\n-----END PUBLIC KEY-----"]
+         bound_audiences = [""]
          bound_issuer = "auto-config-cluster"
          claim_mappings {
             sub = "node"

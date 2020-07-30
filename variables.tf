@@ -17,3 +17,11 @@ variable "container_basename" {
 variable "docker_net_name" {
   default = "consul-net"
 }
+
+variable "jwt_validation_pub_key" {
+  default = ""
+}
+
+variable "intro_token" {
+  default = ""
+}

@@ -12,6 +12,9 @@ module "consul_cluster_dc1" {
   docker_net_name = "${var.docker_net_name}"
   external_ports_start = 30000
 
+  jwt_validation_pub_key = "${var.jwt_validation_pub_key}"
+  intro_token = "${var.intro_token}"
+
   # num_servers = var.num_servers
   num_servers = 1
   num_clients = var.num_clients

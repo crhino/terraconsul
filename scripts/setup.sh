@@ -69,7 +69,10 @@ connect_cmd="envoy"
 counting_flag="-admin-bind=127.0.0.1:19001"
 image="consul-envoy"
 
-terraform plan -out cluster.plan -var "image=${image}"
+jwt_key="$(cat ${DIR}/../secint-pub-key.pem)"
+intro_token="$(secint mint -issuer auto-config-cluster -ttl 1h -node '*')"
+
+terraform plan -out cluster.plan -var "image=${image}" -var "jwt_validation_pub_key=${jwt_key}" -var "intro_token=${intro_token}"
 terraform apply cluster.plan
 
 # Wait for things to converge...
