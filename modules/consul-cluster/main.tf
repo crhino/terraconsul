@@ -30,37 +30,39 @@ resource "docker_container" "servers" {
     internal = 8501
     external = var.external_ports_start + 43 + count.index
   }
-  # upload {
-  #   content = templatefile("${path.module}/consul.d/server.json.tmpl",
-  #     {
-  #       datacenter = var.datacenter,
-  #       primary_datacenter = var.primary_datacenter,
-  #       wan_retry_address = var.wan_retry_address,
-  #       master_token = var.master_token,
-  #     })
-  #   file = "/consul/config/server.json"
-  # }
   upload {
-    content = templatefile("${path.module}/consul.d/server-auto-config.hcl.tmpl",
+    content = templatefile("${path.module}/consul.d/server.json.tmpl",
       {
         datacenter = var.datacenter,
         primary_datacenter = var.primary_datacenter,
         wan_retry_address = var.wan_retry_address,
+        master_token = var.master_token,
         agent_token = var.master_token,
         jwt_validation_pub_key = var.jwt_validation_pub_key,
       })
-    file = "/consul/config/server.hcl"
+    file = "/consul/config/server.json"
   }
+  # upload {
+  #   content = templatefile("${path.module}/consul.d/server-auto-config.hcl.tmpl",
+  #     {
+  #       datacenter = var.datacenter,
+  #       primary_datacenter = var.primary_datacenter,
+  #       wan_retry_address = var.wan_retry_address,
+  #       agent_token = var.master_token,
+  #       jwt_validation_pub_key = var.jwt_validation_pub_key,
+  #     })
+  #   file = "/consul/config/server.hcl"
+  # }
   upload {
     content = file("${path.module}/consul.d/server/consul-agent-ca.pem")
     file = "/consul/config/consul-ca.pem"
   }
   upload {
-    content = file("${path.module}/consul.d/server/chris1-server-consul-0.pem")
+    content = file("${path.module}/consul.d/server/${var.datacenter}-server-consul-0.pem")
     file = "/consul/config/consul-cert.pem"
   }
   upload {
-    content = file("${path.module}/consul.d/server/chris1-server-consul-0-key.pem")
+    content = file("${path.module}/consul.d/server/${var.datacenter}-server-consul-0-key.pem")
     file = "/consul/config/consul-key.pem"
   }
 }
@@ -111,24 +113,24 @@ resource "docker_container" "clients" {
     content = templatefile("${path.module}/consul.d/dashboard/dashboard.json.tmpl", { index = "${count.index}" })
     file = "/consul/dashboard/dashboard.json"
   }
-  # upload {
-  #   content = templatefile("${path.module}/consul.d/client.json.tmpl",
-  #     {
-  #       datacenter = var.datacenter,
-  #       primary_datacenter = var.primary_datacenter,
-  #       agent_token = var.master_token,
-  #     })
-  #   file = "/consul/config/client.json"
-  # }
   upload {
-    content = templatefile("${path.module}/consul.d/client-auto-config.hcl.tmpl",
+    content = templatefile("${path.module}/consul.d/client.json.tmpl",
       {
         datacenter = var.datacenter,
         primary_datacenter = var.primary_datacenter,
         agent_token = var.master_token,
-        server_address = "${data.template_file.server_names[0].rendered}"
-        intro_token = "${var.intro_token}"
       })
-    file = "/consul/config/client.hcl"
+    file = "/consul/config/client.json"
   }
+  # upload {
+  #   content = templatefile("${path.module}/consul.d/client-auto-config.hcl.tmpl",
+  #     {
+  #       datacenter = var.datacenter,
+  #       primary_datacenter = var.primary_datacenter,
+  #       agent_token = var.master_token,
+  #       server_address = "${data.template_file.server_names[0].rendered}"
+  #       intro_token = "${var.intro_token}"
+  #     })
+  #   file = "/consul/config/client.hcl"
+  # }
 }

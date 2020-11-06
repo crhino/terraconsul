@@ -30,19 +30,23 @@ module "consul_cluster_dc1" {
 #   docker_net_name = "${var.docker_net_name}"
 #   external_ports_start = 31000
 
-#   num_servers = var.num_servers
+#   jwt_validation_pub_key = "${var.jwt_validation_pub_key}"
+#   intro_token = "${var.intro_token}"
+
+#   # num_servers = var.num_servers
+#   num_servers = 1
 #   num_clients = var.num_clients
 #   datacenter = "chris2"
 #   primary_datacenter = "chris1"
 #   wan_retry_address = module.consul_cluster_dc1.server_addresses[0]
 # }
 
-# module "ingress" {
-#   source = "./modules/ingress-gateway"
+module "ingress" {
+  source = "./modules/ingress-gateway"
 
-#   image = "envoy-consul"
-#   container_basename = "${var.container_basename}"
-#   docker_net_name = "${var.docker_net_name}"
+  image = "envoy-consul"
+  container_basename = "${var.container_basename}"
+  docker_net_name = "${var.docker_net_name}"
 
-#   agent_address = module.consul_cluster_dc1.server_addresses[0]
-# }
+  agent_address = module.consul_cluster_dc1.server_addresses[0]
+}

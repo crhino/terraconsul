@@ -2,7 +2,7 @@ datacenter = "${datacenter}"
 primary_datacenter = "${primary_datacenter}"
 retry_join_wan = ["${wan_retry_address}"]
 encrypt = "qe3xJo9rtJSU/m8xgp7bB7PL357kNA85G1EBCV8jbE0="
-log_level = "TRACE"
+log_level = "DEBUG"
 server = true
 ui = true
 acl {
@@ -12,6 +12,7 @@ acl {
   enable_token_persistence = true
   tokens {
       master = "${agent_token}"
+      replication = "${agent_token}"
   }
 }
 
